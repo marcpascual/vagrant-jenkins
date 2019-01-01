@@ -28,9 +28,10 @@ Vagrant.configure("2") do |config|
       hostnamectl set-hostname jenkins-master
       wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
       rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
-      yum -y install jenkins
-      systemctl enable jenkins
-      systemctl start jenkins
+      yum -y install jenkins git docker
+      systemctl enable jenkins docker
+      systemctl start jenkins docker
+      usermod -aG docker jenkins
     SHELL
   end
 
@@ -54,6 +55,12 @@ Vagrant.configure("2") do |config|
 
     slave1.vm.provision "shell", inline: <<-SHELL
       hostnamectl set-hostname jenkins-slave1
+      yum -y install git docker
+      groupadd docker
+      systemctl start docker
+      useradd jenkins
+			echo jenkins | passwd --stdin jenkins
+      usermod -aG docker jenkins
     SHELL
   end
 end
